@@ -1,4 +1,4 @@
-# 双目相机标定以及深度图计算
+# 双目相机标定以及深度计算
 (C++,opencv)双目相机标定与深度计算，代码实现的功能就是对立体双目相机进行标定以及利用标定参数计算视差图，再从视差图转为深度图(包含了一些踩过的坑)。
 
 
@@ -25,7 +25,7 @@ make
 如果标定的结果校正出来的图片很扭曲，甚至看不到原图的样子，可能是角点的模糊导致，继续优化拍的图片。项目的data1文件夹下有效果还好的图片。
 
 
-## 深度图计算(stereo_match.cpp)
+## 深度计算(stereo_match.cpp)
 stereo_match.cpp只能给出视差图disp，且由于该视差图被量化为16个等级，所以在计算深度时需要考虑。
 视觉几何的推导不必介绍，下面是计算深度需要的参数
 * baseline：左右相机距离，该参数在标定的相机外参extrinsics.yml中T向量第一个值，取绝对值，单位是mm
@@ -36,3 +36,8 @@ d = (float)disp.at<short int>(h,w)*0.0625;
 ```
 公式：depth(mm) = baseline(mm) * f(pixel) / d(pixel)
 深度的存储格式为float，不易以mat形式存储，一般用视差直接计算。
+将标定好的内外参文件放在主目录下，在主目录下运行：
+```
+build/stereo_match DJI_STE_left_760.jpg DJI_STE_right_760.jpg bm --max-disparity=80 --blocksize=7 -i=intrinsics.yml -e=extrinsics.yml
+```
+就得到了视差图以及深度数据(cout输出的)。
