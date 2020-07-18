@@ -38,6 +38,6 @@ d = (float)disp.at<short int>(h,w)*0.0625;
 深度的存储格式为float，不易以mat形式存储，一般用视差直接计算。
 将标定好的内外参文件放在主目录下，在主目录下运行：
 ```
-build/stereo_match DJI_STE_left_760.jpg DJI_STE_right_760.jpg bm --max-disparity=80 --blocksize=7 -i=intrinsics.yml -e=extrinsics.yml
+build/stereo_match DJI_STE_left_760.jpg DJI_STE_right_760.jpg --max-disparity=80 --blocksize=7 -i=intrinsics.yml -e=extrinsics.yml
 ```
 就得到了视差图以及深度数据(cout输出的)。
