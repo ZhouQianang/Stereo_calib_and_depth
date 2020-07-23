@@ -18,11 +18,12 @@ make
 标定生成两个文件，分别是内参和外参。
 ### 运行自己的图片
 和data平行建立文件夹data1，然后放入图片和stereo_calib.xml，并修改stereo_calib.xml中的图片名，运行同上，需要注意的是，图片的质量很重要，应尽量保证以下几点：
+* 标定板覆盖相机的大片视野
 * 良好的光照
 * 静止拍照
 * 标定板清晰
 * 标定板平整
-如果标定的结果校正出来的图片很扭曲，甚至看不到原图的样子，可能是角点的模糊导致，继续优化拍的图片。项目的data1文件夹下有效果还好的图片。
+如果标定的结果校正出来的图片很扭曲，甚至看不到原图的样子，可能是角点的模糊导致，继续优化拍的图片。项目的data1文件夹下有效果还好的图片(data2)。
 
 
 ## 深度计算(stereo_match.cpp)
@@ -41,3 +42,6 @@ d = (float)disp.at<short int>(h,w)*0.0625;
 build/stereo_match DJI_STE_left_760.jpg DJI_STE_right_760.jpg --max-disparity=80 --blocksize=7 -i=intrinsics.yml -e=extrinsics.yml
 ```
 就得到了视差图以及深度数据(cout输出的)。
+
+## 深度图存取
+深度图与视差图可以以Mat形式写入xml文件，并在matlab中读取，显示点云。这在项目的matlab目录下，用xml2mat.m和depth2points.m实现
