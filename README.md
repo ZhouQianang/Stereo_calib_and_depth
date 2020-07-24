@@ -1,7 +1,3 @@
-# 双目相机标定以及深度计算
-(C++,opencv)双目相机标定与深度计算，代码实现的功能就是对立体双目相机进行标定以及利用标定参数计算视差图，再从视差图转为深度图(包含了一些踩过的坑)。
-
-
 ## 双目相机标定(stereo_calib.cpp)
 stereo_calib.cpp是opencv的例程，在"opencv-3.2.0/samples/cpp"目录下，left01.jpg--left14.jpgm,right01-jpg--right14.jpg以及stereo_calib.xml在"opencv-3.2.0/samples/data"目录下。
 
