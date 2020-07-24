@@ -1,8 +1,8 @@
-## 双目相机标定(stereo_calib.cpp)
-stereo_calib.cpp是opencv的例程，在"opencv-3.2.0/samples/cpp"目录下，left01.jpg--left14.jpgm,right01-jpg--right14.jpg以及stereo_calib.xml在"opencv-3.2.0/samples/data"目录下。
+## 基于opencv的双目相机标定(stereo_calib.cpp)
+stereo_calib.cpp是opencv的例程，在"opencv-3.2.0/samples/cpp"目录下，标准标定图片left01.jpg--left14.jpgm,right01-jpg--right14.jpg以及用于标定的图片文件名stereo_calib.xml在"opencv-3.2.0/samples/data"目录下。运行例程时需要将这些文件同时拷出。
 
-### 运行示例
-把项目下载到本地后，首先在build目录下用cmake编译
+### 运行例程
+将本项目下载到本地后，首先在build目录下用cmake编译
 ```
 cmake ..
 make
@@ -11,33 +11,35 @@ make
 ```
 ../build/stereo_calib -w=9 -h=6 stereo_calib.xml
 ```
-标定生成两个文件，分别是内参和外参。
-### 运行自己的图片
-和data平行建立文件夹data1，然后放入图片和stereo_calib.xml，并修改stereo_calib.xml中的图片名，运行同上，需要注意的是，图片的质量很重要，应尽量保证以下几点：
-* 标定板覆盖相机的大片视野
-* 良好的光照
-* 静止拍照
-* 标定板清晰
-* 标定板平整
-如果标定的结果校正出来的图片很扭曲，甚至看不到原图的样子，可能是角点的模糊导致，继续优化拍的图片。项目的data1文件夹下有效果还好的图片(data2)。
+标定生成两个文件，分别是内参intrinsics.yml和外参extrinsics.yml。
 
+### 运行自己的图片
+和data平行建立文件夹data1，然后放入图片和stereo_calib.xml，并修改stereo_calib.xml中的图片名，运行过程同上，只需要将w和h改成自己标定板的角点个数即可。需要注意的是，待标定图片的质量很重要，应尽量保证以下几点：
+* 标定板覆盖相机的大片视野。可以参考例程的图片。
+* 静止拍照。角点模糊会直接影响标定精度。
+* 标定板平整。
+附注：
+如果标定的结果校正出来的图片很扭曲，甚至看不到原图的样子，可能原因有：
+1、角点提取错误。在stereo_calib.cpp中，可以将函数StereoCalib的displaycorners参数设为true，即可显示角点提取结果。
+2、角点顺序错误。左右两张图片的角点提取，还要保证顺序相同，否则会造成很大扭曲。
+3、标定板占图片区域太少。可能出现能看到完整图片，但是只在中间很小一个区域，周围仍然是扭曲的图像的情况。
 
 ## 深度计算(stereo_match.cpp)
-stereo_match.cpp只能给出视差图disp，且由于该视差图被量化为16个等级，所以在计算深度时需要考虑。
-视觉几何的推导不必介绍，下面是计算深度需要的参数
+stereo_match.cpp只能给出视差图disp，程序默认用SGBM算法计算视差 orz。且由于该视差并不是真正的视差(差了16倍)，因此在计算深度时需要考虑。视觉几何的推导不必介绍，下面介绍计算深度需要的参数
 * baseline：左右相机距离，该参数在标定的相机外参extrinsics.yml中T向量第一个值，取绝对值，单位是mm
-* f：归一化焦距，由于只在x方向有视差，用fx即可，至于用左相机还是右相机，还没找到解决方法，左右相机x方向焦距差距不大时用两者平均，fx的单位是pixel，原因在[这里](https://blog.csdn.net/tercel_zhang/article/details/90523181).
+* f：归一化焦距，由于只在x方向有视差，用fx即可，深度图一般取左深度，因此用左相机的深度即可。fx的单位是pixel，原因在[这里](https://blog.csdn.net/tercel_zhang/article/details/90523181).
 * d：视差，单位为pixel，从disp中读取，除以16的原因在[这里](https://blog.csdn.net/bennygato/article/details/37704259)，读取方式为：
 ```
 d = (float)disp.at<short int>(h,w)*0.0625;
 ```
-公式：depth(mm) = baseline(mm) * f(pixel) / d(pixel)
-深度的存储格式为float，不易以mat形式存储，一般用视差直接计算。
+公式：depth(mm) = baseline(mm) * fx(pixel) / d(pixel)
+
 将标定好的内外参文件放在主目录下，在主目录下运行：
 ```
 build/stereo_match DJI_STE_left_760.jpg DJI_STE_right_760.jpg --max-disparity=80 --blocksize=7 -i=intrinsics.yml -e=extrinsics.yml
 ```
-就得到了视差图以及深度数据(cout输出的)。
+就得到了视差图的xml文件以及深度图的xml文件。
 
-## 深度图存取
-深度图与视差图可以以Mat形式写入xml文件，并在matlab中读取，显示点云。这在项目的matlab目录下，用xml2mat.m和depth2points.m实现
+## 深度图存储，在matlab中读取并显示点云。
+计算得到的深度数据，因为是浮点值，可以存放在CV_32FC1的Mat对象中，并写成xml文件，方便存储和读取。上一步运行的程序已经生成了depth.xml和disp.xml。xml文件存放的浮点类Mat数据可以被其他程序读入且不损失精度。以Mat形式写入xml文件，并在matlab中读取，显示点云。这在项目的matlab目录下，用xml2mat.m和depth2points.m实现
+xml2mat.m中的xml文件名需要改成深度数据点，depth2points.m中的图片名需要改成已经校正好的图片，这在上一步也生成了(rec1.jpg,rec2.jpg)。
