@@ -13,7 +13,7 @@ v0=intrinsic(2,3);
 u=repmat(1:w,[h,1]);
 v=repmat(1:h,[w,1])';
 
-f1=imread('./best/leftr/DJI_STE_left_3.jpg');
+f1=imread('DJI_STE_left_3.jpg');
 
 fg=uint8(zeros(size(f1,1),size(f1,2),3));
 fg(:,:,1)=f1;
