@@ -1,21 +1,21 @@
 %function [ pic2 ] = xml2mat( xml_name )
 %clear;
-%¶ÁÈ¡opencvÖĞxmlÎÄ¼ş£¬±íÊ¾µÄÊÇ¾ØÕó¡£
- xmlDoc = xmlread('./best/depth/DJI_STE_depth_3.xml');
- %µÃµ½¾ØÕóµÄĞĞÊı
+%è¯»å–opencvä¸­xmlæ–‡ä»¶ï¼Œè¡¨ç¤ºçš„æ˜¯çŸ©é˜µã€‚
+ xmlDoc = xmlread('DJI_STE_depth_3.xml');
+ %å¾—åˆ°çŸ©é˜µçš„è¡Œæ•°
  row = xmlDoc.getElementsByTagName('rows').item(0).getFirstChild.getData;
- %µÃµ½¾ØÕóµÄÁĞÊı
+ %å¾—åˆ°çŸ©é˜µçš„åˆ—æ•°
  col = xmlDoc.getElementsByTagName('cols').item(0).getFirstChild.getData;
- row = str2num(row);%¶ÁÈëÊÇstringÀàĞÍ£¬×ªÎªÊı×Ö£»
+ row = str2num(row);%è¯»å…¥æ˜¯stringç±»å‹ï¼Œè½¬ä¸ºæ•°å­—ï¼›
  col = str2num(col);%opencv_
- %´ËÊ±¶ÁÈëµÄÊÇÒ»´®×Ö·û
+ %æ­¤æ—¶è¯»å…¥çš„æ˜¯ä¸€ä¸²å­—ç¬¦
  histstring =char(xmlDoc.getElementsByTagName('data').item(0).getFirstChild.getData);
 
-x1 =strtrim(histstring);%È¥³ıÊ×Î»¿Õ¸ñ£¬Ò»°ãÔÚÊ×Î»ÓĞ¿Õ¸ñ
-x2 = strsplit(x1);%°´ÕÕ¿Õ¸ñÇĞ·Ö×Ö·û
-x3 = str2double(x2);%×ªÎªdoubleĞÍ
+x1 =strtrim(histstring);%å»é™¤é¦–ä½ç©ºæ ¼ï¼Œä¸€èˆ¬åœ¨é¦–ä½æœ‰ç©ºæ ¼
+x2 = strsplit(x1);%æŒ‰ç…§ç©ºæ ¼åˆ‡åˆ†å­—ç¬¦
+x3 = str2double(x2);%è½¬ä¸ºdoubleå‹
 
-pic1 = reshape(x3,col,row);%×ªÎª£¨col,row£©³ß´çµÄmat
-pic2 = pic1';%Çó×ªÖÃ£¬ÕâÊÇÒòÎªxmlÎÄ¼şÖĞµÄÊı¾İÊÇÒ»ÁĞÒ»ÁĞĞ´ÈëµÄ
+pic1 = reshape(x3,col,row);%è½¬ä¸ºï¼ˆcol,rowï¼‰å°ºå¯¸çš„mat
+pic2 = pic1';%æ±‚è½¬ç½®ï¼Œè¿™æ˜¯å› ä¸ºxmlæ–‡ä»¶ä¸­çš„æ•°æ®æ˜¯ä¸€åˆ—ä¸€åˆ—å†™å…¥çš„
 %imshow(pic2,[]);
 %end
