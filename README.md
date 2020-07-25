@@ -43,3 +43,14 @@ build/stereo_match DJI_STE_left_760.jpg DJI_STE_right_760.jpg --max-disparity=80
 ## 深度图存储，在matlab中读取并显示点云。
 计算得到的深度数据，因为是浮点值，可以存放在CV_32FC1的Mat对象中，并写成xml文件，方便存储和读取。上一步运行的程序已经生成了depth.xml和disp.xml。xml文件存放的浮点类Mat数据可以被其他程序读入且不损失精度。以Mat形式写入xml文件，并在matlab中读取，显示点云。这在项目的matlab目录下，用xml2mat.m和depth2points.m实现
 xml2mat.m中的xml文件名需要改成深度数据点，depth2points.m中的图片名需要改成已经校正好的图片，这在上一步也生成了(rec1.jpg,rec2.jpg)。
+```
+xml2mat;
+depth2points;
+```
+
+## 用matlab标定相机参数，并应用于opencv以提高精度
+opencv的相机标定，每张图片的误差显示不出来，但是matlab比较清晰，有每张图片的矫正结果、误差、相机位姿等显式的结果，而且结果往往比opencv的例程更可靠一点，因此，如果需要提高精度，可以选择用matlab进行标定，并将参数转换为opencv能用的格式(intrinsics.yml,extrinsics.yml)，下面比较matlab和opencv的立体相机参数。
+### intrinsics
+|内参|opencv|matlab|
+|----|----|----|
+|左相机内参矩阵|M1|stereoParameters.CameraParameters1.IntrinsicMatrix|
