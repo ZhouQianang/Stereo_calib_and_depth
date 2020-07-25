@@ -51,6 +51,21 @@ depth2points;
 ## 用matlab标定相机参数，并应用于opencv以提高精度
 opencv的相机标定，每张图片的误差显示不出来，但是matlab比较清晰，有每张图片的矫正结果、误差、相机位姿等显式的结果，而且结果往往比opencv的例程更可靠一点，因此，如果需要提高精度，可以选择用matlab进行标定，并将参数转换为opencv能用的格式(intrinsics.yml,extrinsics.yml)，下面比较matlab和opencv的立体相机参数。
 ### intrinsics
-|内参|opencv|matlab|
-|----|----|----|
-|左相机内参矩阵|M1|stereoParameters.CameraParameters1.IntrinsicMatrix|
+|内参|opencv|matlab|备注|
+|----|----|----|----|
+|左相机内参矩阵|M1|stereoParameters.CameraParameters1.IntrinsicMatrix|两者是转置关系|
+|右相机内参矩阵|M2|stereoParameters.CameraParameters2.IntrinsicMatrix|两者是转置关系|
+|左相机畸变参数|D1|stereoParameters.CameraParameters1.RadialDistortion|matlab畸变参数少|
+|右相机畸变参数|D2|stereoParameters.CameraParameters2.RadialDistortion|matlab畸变参数少|
+### extrinsics
+|外参|opencv|matlab|备注|
+|----|----|----|----|
+|右相机相对左相机的旋转|R|stereoParameters.RotationOfCamera2|两者是转置关系|
+|右相机相对左相机的平移|T|stereoParameters.TranslationOfCamera2|两者相等|
+|左相机的校正矩阵|R1|None|matlab没有显式给出，或者我没有发现|
+|右相机的校正矩阵|R2|None|同上|
+|左相机的投影矩阵|P1|None|同上|
+|右相机的校正矩阵|P2|None|同上|
+|Q矩阵|Q|None|同上|
+虽然最后5个参数matlab没有明确给出，但是这5个参数可以由之前的6个参数求出，在opencv中有stereoRectify函数可以由这6个参数求出后续的5个参数。同时，尽管opencv在标定的时候会生成11个参数，但在opencv的立体匹配例程stereo_match.cpp中，只使用了前6个参数，后5个是在计算的过程中自己求解的，因此可以利用该例程，生成这5个参数(需要这5个参数的目的是，有的应用场景下，要求输入的参数不包含R，T，只需要那些投影矩阵和校正矩阵，比如大疆M210)。
+将Matlab标定出的参数，复制到yml文件中，注意yml文件的格式，参数换行需要缩进，与data后面的":"保持一致。用matlab参数对应内外参文件运行stereo_match.cpp，就可以得到R1 R2 P1 P2 Q等参数。
