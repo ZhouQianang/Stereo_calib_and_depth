@@ -57,6 +57,7 @@ opencv的相机标定，每张图片的误差显示不出来，但是matlab比�
 |右相机内参矩阵|M2|stereoParameters.CameraParameters2.IntrinsicMatrix|两者是转置关系|
 |左相机畸变参数|D1|stereoParameters.CameraParameters1.RadialDistortion|matlab畸变参数少|
 |右相机畸变参数|D2|stereoParameters.CameraParameters2.RadialDistortion|matlab畸变参数少|
+distCoeffs	Input vector of distortion coefficients (k1,k2,p1,p2[,k3[,k4,k5,k6[,s1,s2,s3,s4[,τx,τy]]]]) of 4, 5, 8, 12 or 14 elements.
 ### extrinsics
 |外参|opencv|matlab|备注|
 |----|----|----|----|
